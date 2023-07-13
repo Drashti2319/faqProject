@@ -1,32 +1,43 @@
 <template>
-  <div id="app">
-    <nav>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </nav>
-    <router-view />
-  </div>
+  <v-app>
+    <div class="d-flex justify-center align-center">
+      <faq />
+      <snackbar
+        v-model="showToastMessage"
+        :color="snackBarColor"
+        :message="snackbarMessage"
+      />
+    </div>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import Faq from "./components/faq.vue";
+import {bus} from "@/main"
+import Snackbar from './components/snackbar.vue';
 
-nav {
-  padding: 30px;
+export default {
+  name: "App",
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+  components: {
+    Faq,
+    Snackbar,
+  },
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+  data: () => ({
+    showToastMessage: false,
+    snackBarColor: "primary",
+    snackbarMessage: "",
+  }),
+  mounted() {
+    bus.$on("showToastMessage", ({ color, message }) => {
+      this.snackBarColor = color;
+      this.snackbarMessage = message;
+      this.showToastMessage = true;
+    });
+  },
+  beforeDestroy() {
+    bus.$off("showToastMessage");
+  },
+};
+</script>
